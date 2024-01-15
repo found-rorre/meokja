@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.meokja.dao.ScoreDAO">
+
+	<!-- 평가 참가자 리스트 -->
+	<select id="scoreList" parameterType="int" resultType="mo">
+	    select j.member_id from tb_party p
+	        join tb_join j
+	            on p.party_id = j.party_id
+	        where p.party_id = #{party_id}
+	</select>
+	
+	<!-- 평가할 모임원 정보 리스트 -->
+	<select id="scoreMemeberList" parameterType="java.util.ArrayList" resultType="mo">
+		select * from tb_member
+			where 1 =1
+			<if test="list != null and list.size() > 0">
+				and member_id in
+			<foreach collection="list" item="item" separator="," open="(" close=")">
+				#{item}
+			</foreach>
+			</if>
+	</select>
+	
+	<!-- 모임정보 가져오기. -->
+	<select id="score_selectByparty_id" parameterType="int" resultType="vo">
+		select p.* from tb_party p
+			where p.party_id = #{party_id}
+	</select>
+	
+	<!-- 평가횟수 가져오기 -->
+	<select id="scoreCount" parameterType="String" resultType="int">
+		select count(*) from tb_score s
+			where s.member_id = #{member_id}
+	</select>
+	<!-- 총 평가점수 가져오기 -->
+	<select id="totalScore" parameterType="String" resultType="int">
+		SELECT SUM(s.score) FROM tb_score s
+		    WHERE s.member_id = #{member_id}
+	</select>
+	<select id="avgScore" parameterType="String" resultType="double">
+		SELECT AVG(s.score) FROM tb_score s
+		    WHERE s.member_id = #{member_id}
+	</select>
+	
+	
+	<!-- insert -->
+	<insert id="scoreInsert" parameterType="so">
+		insert into tb_score (score_id, party_id, member_id, score) 
+			values (score_id_seq.nextval, #{party_id}, #{member_id}, #{score})
+	</insert>
+</mapper>
+
+
+
+
+
+
+
+
+

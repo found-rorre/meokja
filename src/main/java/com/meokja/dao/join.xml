@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.meokja.dao.JoinDAO">
+
+<!-- select -->
+   	<!-- (모임에 참여한 모든 참여자) -->
+   	<select id="selectJoinList" parameterType="int" resultType="jo">
+         select * from tb_join
+         	inner join tb_member
+         		on tb_join.member_id = tb_member.member_id
+         	and tb_join.party_id = #{party_id}
+   	</select>
+   	<!-- join_id으로 조회한 데이터 1건 -->
+   	<select id="selectByJoin_id" parameterType="jo" resultType="jo">
+		select * from tb_join
+		    inner join tb_member
+		    	on tb_join.member_id = tb_member.member_id
+	    	and tb_join.join_id = #{join_id}
+   	</select>
+   	<!-- 해당 모임에 참여자 여부 -->
+   	<select id="joinCHK" parameterType="jo" resultType="int">
+   		select count(*) FROM tb_join
+		    where party_id = #{party_id}
+		        and member_id = #{member_id}
+   	</select>
+   	
+<!-- update -->
+	<!-- 모임참여 승인 -->
+	<update id="joinGrant" parameterType="jo">
+		UPDATE tb_join
+		  SET status = '수락'
+		  where join_id = #{join_id}
+	</update>
+
+<!-- delete -->
+	<!-- 모임참여 거절 -->
+	<delete id="joinReject" parameterType="jo">
+		DELETE FROM tb_join
+		    where join_id = #{join_id}
+	</delete>
+	<!-- 모임인원 -->
+	<delete id="deleteJoin" parameterType="jo">
+		DELETE FROM tb_join
+			where party_id = #{party_id} and status = '대기'
+   </delete>
+
+<!-- insert -->
+	<!-- 데이터 생성 -->
+	<insert id="joinInsert" parameterType="jo">
+		insert into tb_join (join_id, party_id, member_id, contents) 
+    		values (join_id_seq.nextval, #{party_id}, #{member_id}, #{contents})
+	</insert>
+	
+</mapper>
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.meokja.dao.PartyDAO">
+	
+	<!-- 메인글 저장 (수정완료) -->
+	<insert id="insert" parameterType="vo">
+		insert into tb_party (party_id, member_id, food_category, local_category, subject, contents, map, mealed_at, thumbnail, limitNum, status) 
+		values (party_id_seq.nextval, #{member_id}, #{food_category}, #{local_category}, #{subject}, #{contents}, #{map}, #{mealed_at}, #{thumbnail}, #{limitNum}, '일반')
+	</insert>
+	
+	<!-- 전체 메인글 개수 (수정완료)-->
+	<select id="selectCount" resultType="int">
+		SELECT count(*) from tb_party
+			where status = '일반' and mealed_at > SYSDATE
+	</select>
+	
+	<!-- 1페이지 분량의 메인글 (수정완료) -->
+	<select id="selectList" parameterType="java.util.HashMap" resultType="vo">
+		<![CDATA[
+		SELECT * FROM (
+ 			SELECT ROWNUM rnum, TT.* from(
+				SELECT
+				    tb_party.*, tb_report.reportCount
+				FROM
+				    tb_party
+				LEFT JOIN (
+				    SELECT party_id, COUNT(*) AS reportCount
+					    FROM tb_report
+					    GROUP BY party_id
+				) tb_report
+				ON 
+					tb_party.party_id = tb_report.party_id
+				WHERE
+				    tb_party.status = '일반'
+				    AND tb_party.mealed_at > SYSDATE
+				ORDER BY
+				    tb_party.party_id DESC
+			) TT WHERE rownum <= #{endNo}
+		) where rnum >= #{startNo}
+		]]>
+		
+	</select>
+	<!--  -->
+	<select id="selectCountMulti" parameterType="param" resultType="int">
+	    SELECT count(*) from tb_party
+	    <where>
+	        <if test="condition == '내용'">
+	            contents LIKE '%' || #{item} || '%'
+	        </if>
+	        <if test="condition == '파티명'">
+	            and subject LIKE '%' || #{item} || '%'
+	        </if>
+	        <if test="condition == '내용+파티명'">
+	            and (contents LIKE '%' || #{item} || '%' OR subject LIKE '%' || #{item} || '%')
+	        </if>
+	         <if test="local_category != '전국'">
+	         	 and local_category = #{local_category}
+	        </if>
+	         <if test="food_category != '음식 카테고리'">
+	         	 and food_category = #{food_category}
+	        </if>
+	        and status = '일반' and mealed_at > SYSDATE
+	    </where>
+	</select>
+	
+	<!-- 검색어 있는 1페이지 분량의 메인글 (수정완료) -->
+	<select id="selectListMulti" parameterType="param" resultType="vo">
+	    SELECT * from (
+	        SELECT ROWNUM rnum, TT.* FROM (
+	            SELECT * FROM tb_party
+	            <where>
+	                <if test="condition == '내용'">
+	                    contents LIKE '%' || #{item} || '%' 
+	                </if>
+	                <if test="condition == '파티명'">
+	                    and subject LIKE '%' || #{item} || '%' 
+	                </if>
+	                <if test="condition == '내용+파티명'">
+	                    and (contents LIKE '%' || #{item} || '%' OR subject LIKE '%' || #{item} || '%') 
+	                </if>
+	                <if test="local_category != '전국'">
+			         	 and local_category = #{local_category}
+			        </if>
+			         <if test="food_category != '음식 카테고리'">
+			         	 and food_category = #{food_category}
+			        </if>
+			        and status = '일반'and mealed_at > SYSDATE
+	            </where>
+	            order by party_id desc
+	            <![CDATA[
+	        ) TT WHERE ROWNUM <= #{endNo}
+	    ) WHERE rnum >= #{startNo}
+	    ]]>
+	</select>
+	<!-- 내가만든 모임 리스트 -->
+	<select id="create_myList" parameterType="mo" resultType="vo">
+		SELECT * FROM tb_party
+		    WHERE member_id = #{member_id}
+		    	and status = '일반'
+		    	and mealed_at > SYSDATE
+		    ORDER BY mealed_at
+	</select>
+	
+	<!-- 참여한 모임 리스트 -->
+	<select id="join_myList" parameterType="mo" resultType="vo">
+		SELECT tb_party.* FROM tb_party
+		    INNER JOIN tb_join
+		        ON tb_party.party_id = tb_join.party_id
+		    INNER JOIN tb_member
+		        ON tb_join.member_id = tb_member.member_id
+		    WHERE tb_join.member_id = #{member_id}
+	</select>
+	
+	<!-- 평가해야할 모임 리스트 -->
+	<select id="score_myList" parameterType="mo" resultType="vo">
+			SELECT tt.* FROM tb_score s
+			    RIGHT JOIN (
+			        SELECT p.* FROM tb_party p
+			            LEFT JOIN tb_join j
+			                ON p.party_id = j.party_id
+			            WHERE j.member_id = #{member_id} OR p.member_id = #{member_id}
+			    ) tt
+			    ON (s.party_id = tt.party_id)
+			    WHERE sysdate BETWEEN tt.mealed_at + INTERVAL '1' HOUR AND tt.mealed_at + 7
+			    AND s.score_id IS NULL
+	</select>
+	
+	<!-- 글 1개의 정보 (article) -->
+	<select id="selectByParty_id" parameterType="int" resultType="vo">
+		SELECT * FROM tb_party
+			WHERE party_id = #{party_id}
+				and status = '일반'
+				and mealed_at > SYSDATE
+			ORDER BY mealed_at
+	</select>
+
+	<!-- 글 1개의 정보 (scroe) -->
+	<select id="score_party_id" parameterType="int" resultType="vo">
+		SELECT * FROM tb_party p
+		    join tb_join j
+		        on p.party_id = j.party_id
+		    WHERE p.party_id = #{party_id}
+	</select>
+	
+	<select id="selectSlider" resultType="vo">
+		SELECT * FROM (
+			SELECT * FROM tb_party
+				WHERE status = '일반'
+					and mealed_at > SYSDATE
+				order by mealed_at
+		)  <![CDATA[WHERE ROWNUM <= 6]]>
+	</select>
+	
+	<!-- 파티 수정 -->
+	<update id="partyUpdate" parameterType="vo">
+		update tb_party set subject = #{subject} , contents = #{contents} where party_id = #{party_id}
+	</update>
+	
+	<!-- status '삭제'으로 바꾸기 -->
+	<update id="partyDelete" parameterType="vo">
+		update tb_party set status = '삭제' where party_id = #{party_id}
+	</update>
+	
+	<!-- 신고수 1증가 -->
+	<update id="partyReport" parameterType="vo">
+		update tb_party set deleteReport = #{deleteReport} + 1 where idx = #{idx}
+	</update>
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+

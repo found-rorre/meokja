@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.meokja.dao.MemberDAO">
+
+<!-- insert -->
+
+	<!-- 회원정보 저장 -->
+	<insert id="memberInsert" parameterType="mo">
+	insert into tb_member (member_id, pw, name, nickname, gender, jumin, phone, age, email, photo) 
+    	values (#{member_id}, #{pw}, #{name}, #{nickname}, #{gender}, #{jumin}, #{phone}, #{age}, #{email}, #{photo})
+	</insert>
+	
+<!-- update -->
+
+	<update id="passwordChange" parameterType="mo">
+		update tb_member set password = #{password} where member_id = #{member_id}
+	</update>
+	<!-- 개인정보 수정 -->
+	<update id="myProfileUpdate" parameterType="mo">
+		UPDATE tb_member SET
+			phone = #{phone}, email = #{email}
+			<if test="photo != null">
+				, photo = #{photo}
+			</if>
+			<if test="address != null and !address.isEmpty()">
+				, address = #{address}
+				, postCode = #{postCode}
+			</if>
+			WHERE member_id = #{member_id}
+	</update>
+<!-- delete -->
+	
+<!-- select -->
+	<!-- 중복된 아이디가 있는지 DB 조회하기 ( ID중복검사 ) -->
+	<select id="IDCheck" parameterType="mo" resultType="int">
+   		select count(*) from tb_member where member_id = #{member_id}
+	</select>
+	
+	<!-- 아이디로 DB 조회-->
+	<select id="selectById" parameterType="String" resultType="mo">
+   		select * from tb_member where member_id = #{member_id}
+	</select>
+	<!-- 같은 이름 주민번호 정보 가져오기 -->
+	<select id="selectByName" parameterType="mo" resultType="mo">
+   		select * from tb_member where name = #{name} and jumin = #{jumin}
+	</select>
+	
+	<select id="pwSerch" parameterType="mo" resultType="mo">
+   		select * from tb_member where name = #{name} and jumin = #{jumin} and member_id = #{member_id}
+	</select>
+	
+	<!-- 이메일 보내기 -->
+	<select id="selectEmail" parameterType="String" resultType="String">
+   		select email from tb_member where member_id = #{member_id}
+	</select>
+	<!-- 회원정보 리스트 조회 -->
+	<select id="memberList" parameterType="String" resultType="mo">
+   		select * from tb_member where member_id = #{member_id}
+	</select>
+	
+	
+	
+	<select id="joinMemberList" parameterType="int" resultType="jo">
+		SELECT m.* FROM tb_join j
+		    join tb_member m
+		    	on m.member_id = j.member_id
+		    WHERE j.party_id = #{party_id}
+		    	AND NOT m.member_id = #{member_id}
+	</select>
+	
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+

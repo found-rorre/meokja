@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+	<typeAliases>
+		<!-- 별명 설정 -->
+		<typeAlias type="com.meokja.vo.PartyVO" alias="vo"/>
+		<typeAlias type="com.meokja.vo.MemberVO" alias="mo"/>
+		<typeAlias type="com.meokja.vo.JoinVO" alias="jo"/>
+		<typeAlias type="com.meokja.vo.ReportVO" alias="ro"/>
+		<typeAlias type="com.meokja.vo.ScoreVO" alias="so"/>
+		<typeAlias type="com.meokja.vo.Param" alias="param"/>
+	</typeAliases>
+</configuration>
+

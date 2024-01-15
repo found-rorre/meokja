@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.meokja.dao.ReportDAO">
+
+<!-- insert -->
+	<!-- 신고자 추가 -->
+	<insert id="reportInsert" parameterType="ro">
+		INSERT INTO tb_report (report_id, member_id, party_id)
+			values(report_id_seq.nextval, #{member_id}, #{party_id})
+	</insert>
+	
+<!-- update -->
+
+<!-- delete -->
+   
+<!-- select -->
+  	<select id="reportCount" parameterType="ro" resultType="int">
+		select count(*) from tb_report where member_id = #{member_id} and party_id = #{party_id}
+	</select>
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
