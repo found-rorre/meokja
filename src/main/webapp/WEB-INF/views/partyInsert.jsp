@@ -130,7 +130,7 @@
                      <h5 class="mb-3 text-center">장소 검색</h5>
                      <div class="row">
                         <div class="col-lg-8">
-                           <input type="text" id="keyword" class="form-control mb-3" name="map" autocomplete="off" placeholder="정확한 식당이름을 적어주세요"/>
+                           <input type="text" id="keyword" class="form-control mb-3" name="map" autocomplete="off" placeholder="정확한 식당이름을 적어주세요" value="흥덕식당"/>
                         </div>
                         <div class="col-lg-4 text-center">
                            <div>
@@ -159,7 +159,7 @@
 					<div class="col-lg-2"></div>
                      <!-- 글 내용 -->
 					<div class="col-lg-12 pt-3">
-						<textarea class="form-control mb-4" name="contents" rows="11"  placeholder="내용" style="resize: none;">글 내용</textarea>
+						<textarea class="form-control mb-4" name="contents" rows="11" placeholder="내용" style="resize: none;">글 내용</textarea>
 					</div>
 				</div>
 				<div class="row">
@@ -181,7 +181,6 @@
 </section>
 <!-- footer -->
 <jsp:include page="common/footer.jsp"></jsp:include>
-
-<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=3770323a66e44a0f1eca043b6e64d109&libraries=services"></script>
+<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=015c269f25b33e2d52a027d53ff3a620&libraries=services"></script>
 </body>
 </html>
